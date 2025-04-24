@@ -18,8 +18,8 @@ add_action('admin_menu', 'imjolwp_webp_optimizer_menu');
 
 function imjolwp_webp_optimizer_menu() {
     add_options_page(
-        'WebP Optimizer Settings',
-        'WebP Optimizer',
+        'Imjolwp Image Optimizer Settings',
+        'Imjolwp Image Optimizer',
         'manage_options',
         'imjolwp-webp-optimizer',
         'imjolwp_webp_optimizer_settings_page'
@@ -38,7 +38,7 @@ function imjolwp_register_webp_settings() {
 function imjolwp_webp_optimizer_settings_page() {
     ?>
     <div class="wrap">
-        <h2>WebP Optimizer Settings</h2>
+        <h2>Imjolwp Image Optimizer Settings</h2>
         <form method="post" action="options.php">
             <?php
             settings_fields('imjolwp_webp_optimizer_settings');
@@ -81,9 +81,17 @@ function imjolwp_convert_to_webp($upload) {
 
 // Convert Image to WebP Format
 function imjolwp_generate_webp($file_path) {
+    global $wp_filesystem;
+
+    // Initialize WordPress Filesystem API
+    if (empty($wp_filesystem)) {
+        require_once ABSPATH . '/wp-admin/includes/file.php';
+        WP_Filesystem();
+    }
+
     $webp_quality = get_option('imjolwp_webp_quality', 80);
     $remove_metadata = get_option('imjolwp_remove_metadata', 1);
-    
+
     $info = getimagesize($file_path);
     $mime = $info['mime'];
     $webp_path = $file_path . '.webp';
@@ -101,8 +109,11 @@ function imjolwp_generate_webp($file_path) {
             $image->writeImage($webp_path);
             $image->destroy();
 
-            rename($webp_path, $file_path); // Replace original image with WebP
-            return $file_path;
+            if ($wp_filesystem->move($webp_path, $file_path, true)) {
+                return $file_path;
+            } else {
+                return false;
+            }
         } catch (Exception $e) {
             return false;
         }
@@ -124,8 +135,11 @@ function imjolwp_generate_webp($file_path) {
         imagewebp($image, $webp_path, $webp_quality);
         imagedestroy($image);
 
-        rename($webp_path, $file_path); // Replace original image with WebP
-        return $file_path;
+        if ($wp_filesystem->move($webp_path, $file_path, true)) {
+            return $file_path;
+        } else {
+            return false;
+        }
     }
 
     return false;
