@@ -24,7 +24,7 @@ Automatically converts uploaded images to WebP without changing the image URL fo
 
 1. Upload the plugin files to `/wp-content/plugins/imjolwp-image-optimizer`
 2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Go to **Settings > WebP Optimizer** to configure
+3. Go to **Settings > Imjolwp Image Optimizer** to configure
 
 == Frequently Asked Questions ==
 
@@ -35,7 +35,7 @@ No, the original file path is preserved, only the content is replaced with WebP.
 It will fall back to GD (imagewebp function) if Imagick is unavailable.
 
 == Screenshots ==
-1. Settings page with WebP options
+1. Settings page with Imjolwp Image options
 
 == Changelog ==
 
