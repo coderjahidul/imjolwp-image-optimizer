@@ -26,13 +26,43 @@ function imjolwp_webp_optimizer_menu() {
     );
 }
 
-// Register Settings
 add_action('admin_init', 'imjolwp_register_webp_settings');
 
 function imjolwp_register_webp_settings() {
-    register_setting('imjolwp_webp_optimizer_settings', 'imjolwp_webp_quality', ['default' => 80]);
-    register_setting('imjolwp_webp_optimizer_settings', 'imjolwp_remove_metadata', ['default' => 1]);
+    // Sanitize as an integer between 0-100 (WebP quality)
+    register_setting(
+        'imjolwp_webp_optimizer_settings',
+        'imjolwp_webp_quality',
+        array(
+            'type'              => 'integer',
+            'sanitize_callback' => 'imjolwp_sanitize_quality',
+            'default'           => 80,
+        )
+    );
+
+    // Sanitize as boolean (remove metadata checkbox)
+    register_setting(
+        'imjolwp_webp_optimizer_settings',
+        'imjolwp_remove_metadata',
+        array(
+            'type'              => 'boolean',
+            'sanitize_callback' => 'imjolwp_sanitize_boolean',
+            'default'           => 1,
+        )
+    );
 }
+
+// Sanitize as an integer between 0-100
+function imjolwp_sanitize_quality( $value ) {
+    $value = intval( $value );
+    return ($value >= 0 && $value <= 100) ? $value : 80;
+}
+
+// Sanitize as boolean
+function imjolwp_sanitize_boolean( $value ) {
+    return ( $value === '1' || $value === 1 || $value === true || $value === 'true' ) ? 1 : 0;
+}
+
 
 // Settings Page
 function imjolwp_webp_optimizer_settings_page() {
@@ -123,24 +153,4 @@ function imjolwp_generate_webp($file_path) {
                 $image = imagecreatefromjpeg($file_path);
                 break;
             case 'image/png':
-                $image = imagecreatefrompng($file_path);
-                break;
-            case 'image/gif':
-                $image = imagecreatefromgif($file_path);
-                break;
-            default:
-                return false;
-        }
-
-        imagewebp($image, $webp_path, $webp_quality);
-        imagedestroy($image);
-
-        if ($wp_filesystem->move($webp_path, $file_path, true)) {
-            return $file_path;
-        } else {
-            return false;
-        }
-    }
-
-    return false;
-}
+                $image = imagecreatefrompng

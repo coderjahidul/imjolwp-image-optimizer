@@ -1,5 +1,5 @@
 === IMJOLWP Image Optimizer ===
-Contributors: coderjahidul
+Contributors: grocoder
 Tags: webp, image optimizer, performance, image compression
 Requires at least: 5.0
 Tested up to: 6.8
