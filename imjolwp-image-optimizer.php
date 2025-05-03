@@ -153,4 +153,24 @@ function imjolwp_generate_webp($file_path) {
                 $image = imagecreatefromjpeg($file_path);
                 break;
             case 'image/png':
-                $image = imagecreatefrompng
+                $image = imagecreatefrompng($file_path);
+                break;
+            case 'image/gif':
+                $image = imagecreatefromgif($file_path);
+                break;
+            default:
+                return false;
+        }
+
+        imagewebp($image, $webp_path, $webp_quality);
+        imagedestroy($image);
+
+        if ($wp_filesystem->move($webp_path, $file_path, true)) {
+            return $file_path;
+        } else {
+            return false;
+        }
+    }
+
+    return false;
+}
